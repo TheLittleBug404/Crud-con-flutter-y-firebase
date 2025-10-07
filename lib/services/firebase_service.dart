@@ -20,9 +20,32 @@ Future<List> getPeople() async{
   //   people.add(documento.data());
   // });
   for (var documento in queryPeople.docs) {
+    final Map<String, dynamic> data = documento.data() as Map<String,dynamic>;
+    final person = {
+      'uid' : documento.id,
+      'name' : data['name'],
+    };
     // en cada iteracion es un documento diferente
     //para cada documento lo agregare a mi people
-    people.add(documento.data());
+    //people.add(documento.data());
+    people.add(person);
   }
   return people;
+}
+//metodo que nos ayuda a guardar datos desde la aplicacion a nuestra fire store
+Future<void> addPeople(String name) async{
+  //esperaremos a que nuestra base de datos guarde nuestra collecion
+  //al colocarle people hacemos referencia a nuestra people que nos creamos en fire store
+  //en add le tenemos que añadir el objeto creado en nuestra base de datos de fire store
+  await db.collection('people').add({"name" : name});
+}
+
+//este sera el metodo de actualizar o editar en el firestore
+Future<void> updatePeople(String uid,String newName) async{
+  //con el .doc le decimos que documento yo quiero modificar
+  //luego con el set le decimos que actualizaremos el name que sera el nuevo name
+  await db.collection('people').doc(uid).set({'name':newName});
+}
+Future<void> deletePeople(String uid) async{
+  await db.collection('people').doc(uid).delete();
 }
